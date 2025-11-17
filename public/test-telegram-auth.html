@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Auth Test</title>
+</head>
+<body>
+    <h1>Telegram Authentication Test</h1>
+    
+    <button id="getCsrfToken">1. Get CSRF Token</button>
+    <button id="authenticate" disabled>2. Authenticate with Telegram</button>
+    <button id="getUser" disabled>3. Get User Profile</button>
+    <button id="logout" disabled>4. Logout</button>
+    
+    <div id="result"></div>
+
+    <script>
+        const baseUrl = 'http://localhost';
+        let csrfToken = '';
+        
+        // Step 1: Get CSRF token
+        document.getElementById('getCsrfToken').addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${baseUrl}/sanctum/csrf-cookie`);
+                console.log('CSRF cookie response:', response);
+                
+                // Get the XSRF-TOKEN from cookies
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'XSRF-TOKEN') {
+                        csrfToken = decodeURIComponent(value);
+                        break;
+                    }
+                }
+                
+                document.getElementById('result').innerHTML = `<p>CSRF Token: ${csrfToken}</p>`;
+                document.getElementById('authenticate').disabled = false;
+            } catch (error) {
+                console.error('Error getting CSRF token:', error);
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        });
+        
+        // Step 2: Authenticate with Telegram
+        document.getElementById('authenticate').addEventListener('click', async () => {
+            // Sample Telegram initData (in a real app, this would come from Telegram)
+            const initData = 'query_id=AAEg8NgnAwAAACDw2Ce6r331&user=%7B%22id%22%3A7110979616%2C%22first_name%22%3A%22God%22%2C%22last_name%22%3A%22Mode%22%2C%22username%22%3A%22Godmode963369%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F3JLBL0NsaJwaZQTxpiCZF1TEpzS8hlbq4UbpTixM9UTObxe28tD28zJXcEfXzqSZ.svg%22%7D&auth_date=1761850952&signature=fbNLy25x9urkzWgMaalFasmXuYxWOxk6vmLaQa4VSW_iEsdGnSJRHoF5sfJLMPGhxNnv7BMAVbddPUh6EF6gCg&hash=a14120a4e47ce6ea1ae03ce8ff3268e5d228d4ec01d53d17da9ed09e3802bb90';
+            
+            try {
+                const response = await fetch(`${baseUrl}/api/auth/telegram/callback`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-XSRF-TOKEN': csrfToken,
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        initData: initData
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Auth response:', data);
+                
+                document.getElementById('result').innerHTML = `<p>Auth Response: ${JSON.stringify(data)}</p>`;
+                
+                if (data.success) {
+                    document.getElementById('getUser').disabled = false;
+                    document.getElementById('logout').disabled = false;
+                }
+            } catch (error) {
+                console.error('Error during authentication:', error);
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        });
+        
+        // Step 3: Get user profile
+        document.getElementById('getUser').addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${baseUrl}/api/user`, {
+                    method: 'GET',
+                    headers: {
+                        'X-XSRF-TOKEN': csrfToken,
+                    },
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                console.log('User profile:', data);
+                
+                document.getElementById('result').innerHTML = `<p>User Profile: ${JSON.stringify(data)}</p>`;
+            } catch (error) {
+                console.error('Error getting user profile:', error);
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        });
+        
+        // Step 4: Logout
+        document.getElementById('logout').addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${baseUrl}/api/auth/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-XSRF-TOKEN': csrfToken,
+                    },
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                console.log('Logout response:', data);
+                
+                document.getElementById('result').innerHTML = `<p>Logout Response: ${JSON.stringify(data)}</p>`;
+                
+                // Reset UI
+                document.getElementById('getUser').disabled = true;
+                document.getElementById('logout').disabled = true;
+            } catch (error) {
+                console.error('Error during logout:', error);
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
