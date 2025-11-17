@@ -14,8 +14,8 @@ use App\Http\Requests\Api\LeaveRoomRequest;
 use App\Http\Requests\Api\GameMoveRequest;
 use App\Services\GameService;
 use App\Services\GameRoomService;
+use App\Services\Game\BlotGameService;
 use App\Services\Poker\Engine\HandlePlayerMoveService;
-use App\Services\TransactionService;
 use App\Exceptions\RoomFullException;
 use Exception;
 
@@ -159,13 +159,24 @@ class GameController extends Controller
             $action = $request->input('action');
             $amount = $request->input('amount', 0);
             
-            // Handle player move using our poker engine
-            $handleMoveService = new HandlePlayerMoveService(
-                $this->gameRoomService->getGameRoomPlayerRepository(),
-                $this->gameService->getWalletService(),
-                new TransactionService()
-            );
+            // Check if this is a Blot game
+            if ($room->game_type === GameRoom::GAME_TYPE_BLOT) {
+                // For Blot, we expect a card to be played
+                $card = $request->input('card');
+                
+                if (!$card) {
+                    return $this->errorResponse('Card is required for Blot moves', 400);
+                }
+                
+                // Handle Blot move using BlotGameService
+                $blotGameService = app(BlotGameService::class);
+                $blotGameService->handlePlayerMove($user, $room, $card);
+                
+                return $this->successResponse(null, 'Move processed successfully');
+            }
             
+            // Handle player move using our poker engine
+            $handleMoveService = app(HandlePlayerMoveService::class);
             $handleMoveService->execute($room, $user->id, $action, $amount);
 
             return $this->successResponse(null, 'Move processed successfully');

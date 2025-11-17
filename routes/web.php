@@ -299,6 +299,15 @@ Route::prefix('api')->middleware('auth:sanctum')->group(function () {
                 Route::post('/leave', [GameController::class, 'leave'])
                     ->name('leave')
                     ->middleware('throttle:game-action');
+
+                // Blot-specific routes
+                Route::post('/blot/select-trump', [\App\Http\Controllers\BlotController::class, 'selectTrump'])
+                    ->name('blot.selectTrump')
+                    ->middleware('throttle:game-action');
+
+                Route::post('/blot/announce-combination', [\App\Http\Controllers\BlotController::class, 'announceCombination'])
+                    ->name('blot.announceCombination')
+                    ->middleware('throttle:game-action');
             });
     });
 

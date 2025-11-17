@@ -11,6 +11,7 @@ use App\Repositories\Eloquent\GameRoomPlayerRepository;
 use App\Repositories\Eloquent\TournamentRepository;
 use App\Repositories\Eloquent\ReferralEarningRepository;
 use App\Repositories\Eloquent\GameStateRepository;
+use App\Repositories\Eloquent\BlotGameStateRepository;
 use App\Repositories\Eloquent\AdminRepository;
 use App\Repositories\Eloquent\SocialAccountRepository;
 use App\Services\WalletService;
@@ -68,6 +69,10 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(GameStateRepository::class, function ($app) {
             return new GameStateRepository(new GameState());
+        });
+
+        $this->app->bind(BlotGameStateRepository::class, function ($app) {
+            return new BlotGameStateRepository();
         });
 
         $this->app->bind(AdminRepository::class, function ($app) {

@@ -223,8 +223,15 @@ class GameService
 
             broadcast(new GameStarted($room));
 
-            // Start the poker game and deal cards
-            $this->startPokerGame($room);
+            // Start the game based on game type
+            if ($room->game_type === GameRoom::GAME_TYPE_BLOT) {
+                // Start Blot game
+                $blotGameService = app(\App\Services\Game\BlotGameService::class);
+                $blotGameService->startNewHand($room);
+            } else {
+                // Start poker game
+                $this->startPokerGame($room);
+            }
         }
 
         // Reload room with players
