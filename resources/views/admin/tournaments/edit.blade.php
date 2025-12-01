@@ -104,6 +104,33 @@
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
+                
+                <div>
+                    <label for="status" class="admin-form-label">Status</label>
+                    <select name="status" id="status" class="admin-form-input" required>
+                        <option value="draft" {{ old('status', $tournament->status) == 'draft' ? 'selected' : '' }}>
+                            Draft
+                        </option>
+                        <option value="registration_open" {{ old('status', $tournament->status) == 'registration_open' ? 'selected' : '' }}>
+                            Registration Open
+                        </option>
+                        <option value="registration_closed" {{ old('status', $tournament->status) == 'registration_closed' ? 'selected' : '' }}>
+                            Registration Closed
+                        </option>
+                        <option value="in_progress" {{ old('status', $tournament->status) == 'in_progress' ? 'selected' : '' }}>
+                            In Progress
+                        </option>
+                        <option value="completed" {{ old('status', $tournament->status) == 'completed' ? 'selected' : '' }}>
+                            Completed
+                        </option>
+                        <option value="cancelled" {{ old('status', $tournament->status) == 'cancelled' ? 'selected' : '' }}>
+                            Cancelled
+                        </option>
+                    </select>
+                    @error('status')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
             
             <div class="mt-6">
@@ -171,6 +198,32 @@
                     </button>
                 </form>
             @endif
+        </div>
+        
+        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Current Status: 
+                @switch($tournament->status)
+                    @case('draft')
+                        <span class="admin-badge-secondary">Draft</span>
+                        @break
+                    @case('registration_open')
+                        <span class="admin-badge-success">Registration Open</span>
+                        @break
+                    @case('registration_closed')
+                        <span class="admin-badge-warning">Registration Closed</span>
+                        @break
+                    @case('in_progress')
+                        <span class="admin-badge-primary">In Progress</span>
+                        @break
+                    @case('completed')
+                        <span class="admin-badge-success">Completed</span>
+                        @break
+                    @case('cancelled')
+                        <span class="admin-badge-danger">Cancelled</span>
+                        @break
+                @endswitch
+            </p>
         </div>
     </div>
 </div>

@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class GameRoom extends Model
 {
     const STATUS_WAITING = 'waiting';
+    const STATUS_DISABLED = 'disabled';
     const STATUS_IN_PROGRESS = 'in_progress';
     const STATUS_COMPLETED = 'completed';
-    const STATUS_CANCELLED = 'cancelled';
 
     const GAME_TYPE_POKER = 'poker';
     const GAME_TYPE_BLOT = 'blot';

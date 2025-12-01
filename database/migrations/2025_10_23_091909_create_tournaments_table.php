@@ -29,12 +29,17 @@ return new class extends Migration
 
             // Статус
             $table->enum('status', [
-                'upcoming', // Регистрация еще не открыта
+                'draft', // Черновик
                 'registration_open', // Идет регистрация
+                'registration_closed', // Регистрация закрыта
                 'in_progress', // Идет игра
-                'finished', // Завершен
+                'completed', // Завершен
                 'cancelled' // Отменен
-            ])->default('upcoming');
+            ])->default('draft');
+            
+            // Отмена турнира
+            $table->timestamp('cancelled_at')->nullable();
+            $table->string('cancellation_reason')->nullable();
 
             $table->timestamps();
         });

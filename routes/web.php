@@ -111,6 +111,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::delete('{room}', [AdminGameRoomController::class, 'destroy'])
                 ->name('destroy');
+
+            Route::post('{room}/start', [AdminGameRoomController::class, 'start'])
+                ->name('start');
+
+            Route::post('{room}/complete', [AdminGameRoomController::class, 'complete'])
+                ->name('complete');
+
+            Route::post('{room}/cancel', [AdminGameRoomController::class, 'cancel'])
+                ->name('cancel');
+
+            Route::post('{room}/enable', [AdminGameRoomController::class, 'enable'])
+                ->name('enable');
         });
 
         // Tournaments management

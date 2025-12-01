@@ -167,4 +167,98 @@ class GameRoomController extends Controller
             'average_players' => $room->players()->count(), // TODO: Add historical data
         ];
     }
+    
+    /**
+     * Start game room
+     */
+    public function start(GameRoom $room): RedirectResponse
+    {
+        try {
+            if ($room->status !== GameRoom::STATUS_WAITING) {
+                return redirect()->back()
+                    ->with('error', 'Game room is not in waiting status.');
+            }
+
+            $room->update([
+                'status' => GameRoom::STATUS_IN_PROGRESS,
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Game room started successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Complete game room
+     */
+    public function complete(GameRoom $room): RedirectResponse
+    {
+        try {
+            if ($room->status !== GameRoom::STATUS_IN_PROGRESS) {
+                return redirect()->back()
+                    ->with('error', 'Game room is not in progress.');
+            }
+
+            $room->update([
+                'status' => GameRoom::STATUS_COMPLETED,
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Game room completed successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Cancel game room
+     */
+    public function cancel(GameRoom $room): RedirectResponse
+    {
+        try {
+            if (!in_array($room->status, [GameRoom::STATUS_WAITING, GameRoom::STATUS_IN_PROGRESS])) {
+                return redirect()->back()
+                    ->with('error', 'Game room cannot be cancelled in current status.');
+            }
+
+            $room->update([
+                'status' => GameRoom::STATUS_COMPLETED,
+            ]);
+
+            // TODO: Implement refund logic for players
+
+            return redirect()->back()
+                ->with('success', 'Game room cancelled successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Enable game room
+     */
+    public function enable(GameRoom $room): RedirectResponse
+    {
+        try {
+            if ($room->status !== GameRoom::STATUS_DISABLED) {
+                return redirect()->back()
+                    ->with('error', 'Game room is not disabled.');
+            }
+
+            $room->update([
+                'status' => GameRoom::STATUS_WAITING,
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Game room enabled successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
 }

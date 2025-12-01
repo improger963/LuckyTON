@@ -104,6 +104,34 @@
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
+                
+                <div>
+                    <label for="status" class="admin-form-label">Status</label>
+                    <select name="status" id="status" class="admin-form-input" required>
+                        <option value="">Select Status</option>
+                        <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>
+                            Draft
+                        </option>
+                        <option value="registration_open" {{ old('status') == 'registration_open' ? 'selected' : '' }}>
+                            Registration Open
+                        </option>
+                        <option value="registration_closed" {{ old('status') == 'registration_closed' ? 'selected' : '' }}>
+                            Registration Closed
+                        </option>
+                        <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>
+                            In Progress
+                        </option>
+                        <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>
+                            Completed
+                        </option>
+                        <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>
+                            Cancelled
+                        </option>
+                    </select>
+                    @error('status')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
             
             <div class="mt-6">

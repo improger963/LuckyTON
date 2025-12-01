@@ -60,14 +60,14 @@
                             @case('waiting')
                                 <span class="admin-badge-warning text-lg">Waiting</span>
                                 @break
+                            @case('disabled')
+                                <span class="admin-badge-secondary text-lg">Disabled</span>
+                                @break
                             @case('in_progress')
                                 <span class="admin-badge-primary text-lg">In Progress</span>
                                 @break
                             @case('completed')
                                 <span class="admin-badge-success text-lg">Completed</span>
-                                @break
-                            @case('cancelled')
-                                <span class="admin-badge-secondary text-lg">Cancelled</span>
                                 @break
                         @endswitch
                     </div>

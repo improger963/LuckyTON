@@ -109,6 +109,15 @@
                     </p>
                 </div>
                 @endif
+                                        
+                @if($tournament->status === 'cancelled' && $tournament->cancellation_reason)
+                <div class="mt-6">
+                    <label class="admin-form-label">Cancellation Reason</label>
+                    <p class="text-gray-900 dark:text-white">
+                        {{ $tournament->cancellation_reason }}
+                    </p>
+                </div>
+                @endif
             </div>
         </div>
     </div>

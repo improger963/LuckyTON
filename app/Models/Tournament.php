@@ -27,6 +27,8 @@ class Tournament extends Model
         'registration_opens_at',
         'starts_at',
         'status',
+        'cancelled_at',
+        'cancellation_reason',
     ];
 
     protected $attributes = [
@@ -41,6 +43,7 @@ class Tournament extends Model
             'max_players' => 'integer',
             'registration_opens_at' => 'datetime',
             'starts_at' => 'datetime',
+            'cancelled_at' => 'datetime',
         ];
     }
 

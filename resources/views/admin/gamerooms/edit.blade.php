@@ -74,6 +74,27 @@
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
+                
+                <div>
+                    <label for="status" class="admin-form-label">Status</label>
+                    <select name="status" id="status" class="admin-form-input" required>
+                        <option value="waiting" {{ old('status', $room->status) == 'waiting' ? 'selected' : '' }}>
+                            Waiting
+                        </option>
+                        <option value="disabled" {{ old('status', $room->status) == 'disabled' ? 'selected' : '' }}>
+                            Disabled
+                        </option>
+                        <option value="in_progress" {{ old('status', $room->status) == 'in_progress' ? 'selected' : '' }}>
+                            In Progress
+                        </option>
+                        <option value="completed" {{ old('status', $room->status) == 'completed' ? 'selected' : '' }}>
+                            Completed
+                        </option>
+                    </select>
+                    @error('status')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
             
             <div class="mt-6">
@@ -123,6 +144,35 @@
                     </button>
                 </form>
             @endif
+            
+            @if($room->status === 'disabled')
+                <form method="POST" action="#">
+                    @csrf
+                    <button type="submit" class="admin-btn-success">
+                        <i class="bi bi-play-circle mr-1"></i> Enable Room
+                    </button>
+                </form>
+            @endif
+        </div>
+        
+        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Current Status: 
+                @switch($room->status)
+                    @case('waiting')
+                        <span class="admin-badge-secondary">Waiting</span>
+                        @break
+                    @case('disabled')
+                        <span class="admin-badge-warning">Disabled</span>
+                        @break
+                    @case('in_progress')
+                        <span class="admin-badge-primary">In Progress</span>
+                        @break
+                    @case('completed')
+                        <span class="admin-badge-success">Completed</span>
+                        @break
+                @endswitch
+            </p>
         </div>
     </div>
 </div>
