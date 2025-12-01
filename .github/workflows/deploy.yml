@@ -18,12 +18,17 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Остановить выполнение, если любая команда упадет с ошибкой
+        script: |
             set -e
 
             echo "📂 Переходим в папку проекта..."
             cd ~/backend
+
+            echo "🔧 ПРЕДВАРИТЕЛЬНОЕ ИСПРАВЛЕНИЕ ПРАВ..."
+            # !!! ВАЖНО: Возвращаем права пользователю deploy (ID 1000), 
+            # чтобы Git мог удалить старые файлы кэша.
+            # Мы используем Docker от рута, чтобы сделать chown
+            docker exec -u root app_backend chown -R 1000:1000 /var/www/html
 
             echo "⬇️ Скачиваем свежий код..."
             git fetch origin production
@@ -39,8 +44,8 @@ jobs:
             docker exec app_backend npm install
             docker exec app_backend npm run build
 
-            echo "🔧 Исправляем права доступа (чтобы не было ошибки 500)..."
-            # Разрешаем веб-серверу и владельцу писать в важные папки
+            echo "🔧 Возвращаем права веб-серверу..."
+            # Теперь, когда Git отработал, отдаем права обратно www-data
             docker exec -u root app_backend chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/build
             docker exec -u root app_backend chmod -R 775 /var/www/html/storage
 
