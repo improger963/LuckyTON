@@ -42,7 +42,7 @@ class DashboardController extends Controller
         $latestUsers = $this->getLatestUsers();
         $recentActivities = $this->getRecentActivities();
 
-        return view('admin.dashboard', compact('stats', 'chartData', 'latestUsers', 'recentActivities'));
+        return view('admin.dashboard.index', compact('stats', 'chartData', 'latestUsers', 'recentActivities'));
     }
 
     /**

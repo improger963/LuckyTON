@@ -30,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('http');
         }
 
+      if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         // Configure rate limiting
         RateLimiter::for('auth', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip());
