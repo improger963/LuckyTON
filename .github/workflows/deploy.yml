@@ -18,7 +18,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-    script: |
+          script: |
             set -e
 
             echo "📂 Переходим в папку проекта..."
