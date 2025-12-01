@@ -119,9 +119,17 @@ class AdvanceToNextStageService
      */
     private function advanceToFlop(GameRoom $room, GameStateData $gameState): void
     {
-        // Burn one card
+        // For a complete implementation, we would load the deck from cache/database
+        // For now, we'll create a new deck and shuffle it
         $deck = new DeckService();
-        $deck->shuffle(); // We'll need to implement deck persistence in a real implementation
+        $deck->shuffle();
+        
+        // In a real implementation, we would load the existing deck state:
+        // $deckState = Cache::get("game_deck_{$room->id}");
+        // $deck = DeckService::fromArray($deckState);
+        
+        // Burn one card
+        $deck->draw();
         
         // Draw three community cards
         $communityCards = $deck->drawMultiple(3)->toArray();
@@ -135,6 +143,9 @@ class AdvanceToNextStageService
         
         // Save state
         GameState::saveState($room->id, $gameState->toArray());
+        
+        // In a real implementation, we would save the updated deck:
+        // Cache::put("game_deck_{$room->id}", $deck->toArray(), now()->addHours(1));
         
         // Broadcast community cards
         broadcast(new CommunityCardsDealt(
@@ -162,9 +173,17 @@ class AdvanceToNextStageService
      */
     private function advanceToTurn(GameRoom $room, GameStateData $gameState): void
     {
-        // Burn one card
+        // For a complete implementation, we would load the deck from cache/database
+        // For now, we'll create a new deck and shuffle it
         $deck = new DeckService();
-        $deck->shuffle(); // We'll need to implement deck persistence in a real implementation
+        $deck->shuffle();
+        
+        // In a real implementation, we would load the existing deck state:
+        // $deckState = Cache::get("game_deck_{$room->id}");
+        // $deck = DeckService::fromArray($deckState);
+        
+        // Burn one card
+        $deck->draw();
         
         // Draw one community card
         $communityCard = $deck->draw();
@@ -178,6 +197,9 @@ class AdvanceToNextStageService
         
         // Save state
         GameState::saveState($room->id, $gameState->toArray());
+        
+        // In a real implementation, we would save the updated deck:
+        // Cache::put("game_deck_{$room->id}", $deck->toArray(), now()->addHours(1));
         
         // Broadcast community card
         broadcast(new CommunityCardsDealt(
@@ -205,9 +227,17 @@ class AdvanceToNextStageService
      */
     private function advanceToRiver(GameRoom $room, GameStateData $gameState): void
     {
-        // Burn one card
+        // For a complete implementation, we would load the deck from cache/database
+        // For now, we'll create a new deck and shuffle it
         $deck = new DeckService();
-        $deck->shuffle(); // We'll need to implement deck persistence in a real implementation
+        $deck->shuffle();
+        
+        // In a real implementation, we would load the existing deck state:
+        // $deckState = Cache::get("game_deck_{$room->id}");
+        // $deck = DeckService::fromArray($deckState);
+        
+        // Burn one card
+        $deck->draw();
         
         // Draw one community card
         $communityCard = $deck->draw();
@@ -221,6 +251,9 @@ class AdvanceToNextStageService
         
         // Save state
         GameState::saveState($room->id, $gameState->toArray());
+        
+        // In a real implementation, we would save the updated deck:
+        // Cache::put("game_deck_{$room->id}", $deck->toArray(), now()->addHours(1));
         
         // Broadcast community card
         broadcast(new CommunityCardsDealt(
