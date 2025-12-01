@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tournaments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('description')->nullable();
             $table->string('game_type'); // 'poker' или 'blot'
 
             // Финансы

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('game_type');
             $table->string('name');
+            $table->text('description')->nullable();
             $table->decimal('stake', 16, 8);
             $table->unsignedTinyInteger('max_players');
             $table->enum('status', ['waiting', 'in_progress', 'finished', 'cancelled'])
