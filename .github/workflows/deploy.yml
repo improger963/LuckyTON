@@ -1,0 +1,54 @@
+name: Deploy Production
+
+on:
+  push:
+    branches: [ "production" ] # Срабатывает ТОЛЬКО когда обновляется эта ветка
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 🔐 Setup SSH & Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Остановить выполнение, если любая команда упадет с ошибкой
+            set -e
+
+            echo "📂 Переходим в папку проекта..."
+            cd ~/backend
+
+            echo "⬇️ Скачиваем свежий код..."
+            git fetch origin production
+            git reset --hard origin/production
+
+            echo "📦 Обновляем PHP зависимости..."
+            docker exec app_backend composer install --no-dev --optimize-autoloader
+
+            echo "🗄️ Запускаем миграции БД..."
+            docker exec app_backend php artisan migrate --force
+
+            echo "🎨 Собираем Frontend (Tailwind v4)..."
+            docker exec app_backend npm install
+            docker exec app_backend npm run build
+
+            echo "🔧 Исправляем права доступа (чтобы не было ошибки 500)..."
+            # Разрешаем веб-серверу и владельцу писать в важные папки
+            docker exec -u root app_backend chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/build
+            docker exec -u root app_backend chmod -R 775 /var/www/html/storage
+
+            echo "🔄 Перезапускаем очереди..."
+            docker exec app_backend php artisan queue:restart
+
+            echo "🧹 Очищаем кэш..."
+            docker exec app_backend php artisan optimize:clear
+            docker exec app_backend php artisan view:clear
+
+            echo "✅ ДЕПЛОЙ УСПЕШНО ЗАВЕРШЕН!"
