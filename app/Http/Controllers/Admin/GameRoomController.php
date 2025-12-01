@@ -44,7 +44,7 @@ class GameRoomController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:500'],
             'game_type' => ['required', 'in:poker,blot'],
-            'status' => ['required', 'in:waiting,disabled,in_progress,completed'],
+            'status' => ['required', 'in:waiting,cancelled,in_progress,finished'],
             'stake' => ['required', 'numeric', 'min:0'],
             'max_players' => ['required', 'integer', 'min:2', 'max:10'],
         ], [
@@ -91,7 +91,7 @@ class GameRoomController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:500'],
             'game_type' => ['required', 'in:poker,blot'],
-            'status' => ['required', 'in:waiting,disabled,in_progress,completed'],
+            'status' => ['required', 'in:waiting,cancelled,in_progress,finished'],
             'stake' => ['required', 'numeric', 'min:0'],
             'max_players' => ['required', 'integer', 'min:2', 'max:10'],
         ], [
@@ -144,7 +144,8 @@ class GameRoomController extends Controller
     public function show(GameRoom $room): View
     {
         $room->load(['players' => function ($query) {
-            $query->select('users.id', 'users.username', 'users.avatar');
+            $query->select('users.id', 'users.username', 'users.email', 'users.avatar')
+                  ->withTimestamps();
         }]);
 
         $roomStats = $this->getGameRoomStats($room);
@@ -160,11 +161,13 @@ class GameRoomController extends Controller
      */
     private function getGameRoomStats(GameRoom $room): array
     {
+        $playerCount = $room->players()->count();
+        
         return [
-            'total_players' => $room->players()->count(),
+            'total_players' => $playerCount,
             'total_games_played' => 0, // TODO: Add game history tracking
-            'total_revenue' => $room->players()->count() * $room->stake,
-            'average_players' => $room->players()->count(), // TODO: Add historical data
+            'total_revenue' => $playerCount * $room->stake,
+            'average_players' => $playerCount, // TODO: Add historical data
         ];
     }
     

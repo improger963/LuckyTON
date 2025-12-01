@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class GameRoom extends Model
 {
     const STATUS_WAITING = 'waiting';
-    const STATUS_DISABLED = 'disabled';
+    const STATUS_DISABLED = 'cancelled';
     const STATUS_IN_PROGRESS = 'in_progress';
-    const STATUS_COMPLETED = 'completed';
+    const STATUS_COMPLETED = 'finished';
 
     const GAME_TYPE_POKER = 'poker';
     const GAME_TYPE_BLOT = 'blot';
@@ -84,6 +84,11 @@ class GameRoom extends Model
      */
     public function getCurrentPlayersCountAttribute(): int
     {
+        // Use loaded relationship if available, otherwise count from database
+        if ($this->relationLoaded('players')) {
+            return $this->players->count();
+        }
+        
         return $this->players()->count();
     }
 
