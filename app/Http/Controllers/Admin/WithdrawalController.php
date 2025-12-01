@@ -22,7 +22,7 @@ class WithdrawalController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('admin.withdrawals.index', ['withdrawals' => $withdrawals]);
+        return view('admin.withdrawals.modern-index', ['withdrawals' => $withdrawals]);
     }
 
     /**
@@ -111,6 +111,55 @@ class WithdrawalController extends Controller
 
             return redirect()->back()
                 ->with('success', 'Withdrawal rejected and funds returned to user.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+    
+    /**
+     * Cancel withdrawal
+     */
+    public function cancel(Request $request, Transaction $transaction): RedirectResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'reason' => ['required', 'string', 'max:255'],
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            if ($transaction->type !== Transaction::TYPE_WITHDRAWAL) {
+                return redirect()->back()
+                    ->with('error', 'Only withdrawal transactions can be cancelled.');
+            }
+
+            if ($transaction->status !== Transaction::STATUS_PENDING) {
+                return redirect()->back()
+                    ->with('error', 'Only pending withdrawals can be cancelled.');
+            }
+
+            // Return funds to user's wallet
+            $wallet = $transaction->wallet;
+            $wallet->increment('balance', abs($transaction->amount));
+
+            $transaction->update([
+                'status' => Transaction::STATUS_CANCELLED,
+                'metadata' => array_merge($transaction->metadata ?? [], [
+                    'cancelled_by' => auth('admin')->id(),
+                    'cancelled_at' => now(),
+                    'cancellation_reason' => $validator->validated()['reason'],
+                    'admin_notes' => 'Cancelled by admin',
+                ]),
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Withdrawal cancelled and funds returned to user.');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', $e->getMessage());

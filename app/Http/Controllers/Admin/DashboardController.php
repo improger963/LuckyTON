@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Transaction;
+use App\Models\GameRoom;
+use App\Models\Tournament;
 use App\Repositories\Eloquent\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,13 +38,16 @@ class DashboardController extends Controller
             'total_transactions' => Transaction::count(),
             'recent_registrations' => User::where('created_at', '>=', now()->subDay())->count(),
             'pending_withdrawals' => Transaction::pendingWithdrawals()->count(),
+            'total_rooms' => GameRoom::count(),
+            'total_tournaments' => Tournament::count(),
+            'new_users_today' => User::whereDate('created_at', today())->count(),
         ];
 
         $chartData = $this->getRegistrationChartData();
         $latestUsers = $this->getLatestUsers();
         $recentActivities = $this->getRecentActivities();
 
-        return view('admin.dashboard.index', compact('stats', 'chartData', 'latestUsers', 'recentActivities'));
+        return view('admin.dashboard.modern-index', compact('stats', 'chartData', 'latestUsers', 'recentActivities'));
     }
 
     /**

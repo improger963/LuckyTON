@@ -20,7 +20,7 @@ class TournamentController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('admin.tournaments.index', ['tournaments' => $tournaments]);
+        return view('admin.tournaments.modern-index', ['tournaments' => $tournaments]);
     }
 
     /**
@@ -192,6 +192,32 @@ class TournamentController extends Controller
     }
 
     /**
+     * Complete tournament
+     */
+    public function complete(Tournament $tournament): RedirectResponse
+    {
+        try {
+            if ($tournament->status !== Tournament::STATUS_IN_PROGRESS) {
+                return redirect()->back()
+                    ->with('error', 'Only in-progress tournaments can be completed.');
+            }
+
+            $tournament->update([
+                'status' => Tournament::STATUS_COMPLETED,
+                'completed_at' => now(),
+            ]);
+
+            // TODO: Implement prize distribution logic
+
+            return redirect()->back()
+                ->with('success', 'Tournament completed successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
      * Cancel tournament
      */
     public function cancel(Request $request, Tournament $tournament): RedirectResponse
@@ -223,6 +249,87 @@ class TournamentController extends Controller
 
             return redirect()->back()
                 ->with('success', 'Tournament cancelled successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Enable tournament (transition from draft/cancelled to registration_open)
+     */
+    public function enable(Tournament $tournament): RedirectResponse
+    {
+        try {
+            if (!in_array($tournament->status, [Tournament::STATUS_DRAFT, Tournament::STATUS_CANCELLED])) {
+                return redirect()->back()
+                    ->with('error', 'Only draft or cancelled tournaments can be enabled.');
+            }
+
+            // Check if registration open date is in the future
+            if ($tournament->registration_opens_at <= now()) {
+                return redirect()->back()
+                    ->with('error', 'Registration open date must be in the future to enable tournament.');
+            }
+
+            $tournament->update([
+                'status' => Tournament::STATUS_REGISTRATION_OPEN,
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Tournament enabled successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Disable tournament (transition to draft)
+     */
+    public function disable(Tournament $tournament): RedirectResponse
+    {
+        try {
+            if (!in_array($tournament->status, [Tournament::STATUS_REGISTRATION_OPEN, Tournament::STATUS_DRAFT])) {
+                return redirect()->back()
+                    ->with('error', 'Only open or draft tournaments can be disabled.');
+            }
+
+            $tournament->update([
+                'status' => Tournament::STATUS_DRAFT,
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Tournament disabled successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Close tournament registration
+     */
+    public function closeRegistration(Tournament $tournament): RedirectResponse
+    {
+        try {
+            if ($tournament->status !== Tournament::STATUS_REGISTRATION_OPEN) {
+                return redirect()->back()
+                    ->with('error', 'Only open tournaments can have registration closed.');
+            }
+
+            // Check if start time is in the future
+            if ($tournament->starts_at <= now()) {
+                return redirect()->back()
+                    ->with('error', 'Tournament start time must be in the future to close registration.');
+            }
+
+            $tournament->update([
+                'status' => Tournament::STATUS_REGISTRATION_CLOSED,
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Tournament registration closed successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', $e->getMessage());

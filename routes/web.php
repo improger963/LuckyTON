@@ -33,6 +33,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Dashboard
         Route::get('dashboard', [AdminDashboardController::class, 'index'])
             ->name('dashboard');
+            
+        // Test route for modern design
+        Route::get('test/modern-design', function () {
+            return view('admin.test.modern-design');
+        })->name('test.modern-design');
 
         // Logout
         Route::post('logout', [AdminAuthController::class, 'destroy'])
@@ -123,6 +128,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::post('{room}/enable', [AdminGameRoomController::class, 'enable'])
                 ->name('enable');
+                
+            Route::post('{room}/disable', [AdminGameRoomController::class, 'disable'])
+                ->name('disable');
         });
 
         // Tournaments management
@@ -147,6 +155,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::delete('{tournament}', [AdminTournamentController::class, 'destroy'])
                 ->name('destroy');
+                
+            Route::post('{tournament}/start', [AdminTournamentController::class, 'start'])
+                ->name('start');
+                
+            Route::post('{tournament}/complete', [AdminTournamentController::class, 'complete'])
+                ->name('complete');
+                
+            Route::post('{tournament}/cancel', [AdminTournamentController::class, 'cancel'])
+                ->name('cancel');
+                
+            Route::post('{tournament}/enable', [AdminTournamentController::class, 'enable'])
+                ->name('enable');
+                
+            Route::post('{tournament}/disable', [AdminTournamentController::class, 'disable'])
+                ->name('disable');
+                
+            Route::post('{tournament}/close-registration', [AdminTournamentController::class, 'closeRegistration'])
+                ->name('closeRegistration');
         });
     });
 });

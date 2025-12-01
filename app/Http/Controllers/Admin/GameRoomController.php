@@ -21,7 +21,7 @@ class GameRoomController extends Controller
             ->orderBy('stake')
             ->paginate(15);
 
-        return view('admin.gamerooms.index', ['rooms' => $rooms]);
+        return view('admin.gamerooms.modern-index', ['rooms' => $rooms]);
     }
 
     /**
@@ -256,6 +256,29 @@ class GameRoomController extends Controller
 
             return redirect()->back()
                 ->with('success', 'Game room enabled successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+    
+    /**
+     * Disable game room
+     */
+    public function disable(GameRoom $room): RedirectResponse
+    {
+        try {
+            if ($room->status !== GameRoom::STATUS_WAITING) {
+                return redirect()->back()
+                    ->with('error', 'Only waiting game rooms can be disabled.');
+            }
+
+            $room->update([
+                'status' => GameRoom::STATUS_DISABLED,
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Game room disabled successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', $e->getMessage());
