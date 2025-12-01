@@ -1,179 +1,190 @@
-@extends('admin.layouts.app')
+@extends('admin.layouts.modern-app')
 
 @section('title', 'Edit Game Room')
 @section('subtitle', 'Modify game room settings')
 
 @section('actions')
-<a href="{{ route('admin.gamerooms.index') }}" class="admin-btn-secondary">
-    <i class="bi bi-arrow-left mr-1"></i> Back to Rooms
-</a>
+<x-admin.button variant="secondary" href="{{ route('admin.gamerooms.index') }}" icon="bi bi-arrow-left">
+    Back to Rooms
+</x-admin.button>
 @endsection
 
 @section('content')
-<div class="admin-card">
-    <div class="admin-card-header">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Edit Game Room</h2>
-    </div>
-    
-    <div class="admin-card-body">
-        <form method="POST" action="{{ route('admin.gamerooms.update', $room) }}">
-            @csrf
-            @method('PUT')
+<x-admin.card title="Edit Game Room" subtitle="Update game room settings">
+    <form method="POST" action="{{ route('admin.gamerooms.update', $room) }}">
+        @csrf
+        @method('PUT')
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <x-admin.form-input 
+                label="Room Name" 
+                name="name" 
+                value="{{ old('name', $room->name) }}" 
+                placeholder="Enter room name" 
+                required="true" 
+                error="true" />
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="name" class="admin-form-label">Room Name</label>
-                    <input type="text" name="name" id="name" 
-                           value="{{ old('name', $room->name) }}"
-                           class="admin-form-input" required>
-                    @error('name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div>
-                    <label for="game_type" class="admin-form-label">Game Type</label>
-                    <select name="game_type" id="game_type" class="admin-form-input" required>
-                        <option value="poker" {{ old('game_type', $room->game_type) == 'poker' ? 'selected' : '' }}>
-                            Poker
-                        </option>
-                        <option value="blot" {{ old('game_type', $room->game_type) == 'blot' ? 'selected' : '' }}>
-                            Blot
-                        </option>
-                    </select>
-                    @error('game_type')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div>
-                    <label for="stake" class="admin-form-label">Stake Amount ($)</label>
-                    <input type="number" name="stake" id="stake" step="0.01" min="0"
-                           value="{{ old('stake', $room->stake) }}"
-                           class="admin-form-input" required>
-                    @error('stake')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div>
-                    <label for="max_players" class="admin-form-label">Max Players</label>
-                    <input type="number" name="max_players" id="max_players" min="2" max="10"
-                           value="{{ old('max_players', $room->max_players) }}"
-                           class="admin-form-input" required>
-                    @error('max_players')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div class="md:col-span-2">
-                    <label for="description" class="admin-form-label">Description</label>
-                    <textarea name="description" id="description" rows="3"
-                              class="admin-form-input">{{ old('description', $room->description) }}</textarea>
-                    @error('description')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div>
-                    <label for="status" class="admin-form-label">Status</label>
-                    <select name="status" id="status" class="admin-form-input" required>
-                        <option value="waiting" {{ old('status', $room->status) == 'waiting' ? 'selected' : '' }}>
-                            Waiting
-                        </option>
-                        <option value="disabled" {{ old('status', $room->status) == 'disabled' ? 'selected' : '' }}>
-                            Disabled
-                        </option>
-                        <option value="in_progress" {{ old('status', $room->status) == 'in_progress' ? 'selected' : '' }}>
-                            In Progress
-                        </option>
-                        <option value="completed" {{ old('status', $room->status) == 'completed' ? 'selected' : '' }}>
-                            Completed
-                        </option>
-                    </select>
-                    @error('status')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+            <div>
+                <label for="game_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Game Type
+                </label>
+                <select name="game_type" id="game_type" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm" required>
+                    <option value="poker" {{ old('game_type', $room->game_type) == 'poker' ? 'selected' : '' }}>
+                        Poker
+                    </option>
+                    <option value="blot" {{ old('game_type', $room->game_type) == 'blot' ? 'selected' : '' }}>
+                        Blot
+                    </option>
+                </select>
+                @error('game_type')
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                @enderror
             </div>
             
-            <div class="mt-6">
-                <button type="submit" class="admin-btn-primary">
-                    <i class="bi bi-save mr-1"></i> Save Changes
-                </button>
-                <a href="{{ route('admin.gamerooms.index') }}" class="admin-btn-secondary ml-2">
-                    Cancel
-                </a>
+            <x-admin.form-input 
+                label="Stake Amount ($)" 
+                name="stake" 
+                type="number" 
+                step="0.01" 
+                min="0"
+                value="{{ old('stake', $room->stake) }}" 
+                placeholder="0.00" 
+                required="true" 
+                error="true" />
+            
+            <x-admin.form-input 
+                label="Max Players" 
+                name="max_players" 
+                type="number" 
+                min="2" 
+                max="10"
+                value="{{ old('max_players', $room->max_players) }}" 
+                placeholder="Enter max players" 
+                required="true" 
+                error="true" />
+            
+            <div class="md:col-span-2">
+                <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                </label>
+                <textarea name="description" id="description" rows="3"
+                          class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm">{{ old('description', $room->description) }}</textarea>
+                @error('description')
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                @enderror
             </div>
-        </form>
-    </div>
-</div>
-
-<!-- Status Management -->
-<div class="admin-card mt-6">
-    <div class="admin-card-header">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Room Status</h2>
-    </div>
-    
-    <div class="admin-card-body">
-        <div class="flex flex-wrap gap-3">
-            @if($room->status === 'waiting')
-                <form method="POST" action="#">
-                    @csrf
-                    <button type="submit" class="admin-btn-primary">
-                        <i class="bi bi-play-circle mr-1"></i> Start Game
-                    </button>
-                </form>
-            @endif
             
-            @if(in_array($room->status, ['waiting', 'in_progress']))
-                <form method="POST" action="#">
-                    @csrf
-                    <button type="submit" class="admin-btn-danger"
-                            onclick="return confirm('Are you sure you want to cancel this game room?')">
-                        <i class="bi bi-slash-circle mr-1"></i> Cancel Room
-                    </button>
-                </form>
-            @endif
-            
-            @if($room->status === 'in_progress')
-                <form method="POST" action="#">
-                    @csrf
-                    <button type="submit" class="admin-btn-success">
-                        <i class="bi bi-check-circle mr-1"></i> Complete Game
-                    </button>
-                </form>
-            @endif
-            
-            @if($room->status === 'disabled')
-                <form method="POST" action="#">
-                    @csrf
-                    <button type="submit" class="admin-btn-success">
-                        <i class="bi bi-play-circle mr-1"></i> Enable Room
-                    </button>
-                </form>
-            @endif
+            <div>
+                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Status
+                </label>
+                <select name="status" id="status" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm" required>
+                    <option value="waiting" {{ old('status', $room->status) == 'waiting' ? 'selected' : '' }}>
+                        Waiting
+                    </option>
+                    <option value="disabled" {{ old('status', $room->status) == 'disabled' ? 'selected' : '' }}>
+                        Disabled
+                    </option>
+                    <option value="in_progress" {{ old('status', $room->status) == 'in_progress' ? 'selected' : '' }}>
+                        In Progress
+                    </option>
+                    <option value="completed" {{ old('status', $room->status) == 'completed' ? 'selected' : '' }}>
+                        Completed
+                    </option>
+                </select>
+                @error('status')
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
         </div>
         
-        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-                Current Status: 
-                @switch($room->status)
-                    @case('waiting')
-                        <span class="admin-badge-secondary">Waiting</span>
-                        @break
-                    @case('disabled')
-                        <span class="admin-badge-warning">Disabled</span>
-                        @break
-                    @case('in_progress')
-                        <span class="admin-badge-primary">In Progress</span>
-                        @break
-                    @case('completed')
-                        <span class="admin-badge-success">Completed</span>
-                        @break
-                @endswitch
-            </p>
+        <div class="mt-6 flex items-center">
+            <x-admin.button variant="primary" icon="bi bi-save" type="submit">
+                Save Changes
+            </x-admin.button>
+            <x-admin.button variant="secondary" href="{{ route('admin.gamerooms.index') }}" class="ml-2">
+                Cancel
+            </x-admin.button>
         </div>
+    </form>
+</x-admin.card>
+
+<!-- Status Management -->
+<x-admin.card title="Room Status" subtitle="Manage game room status" class="mt-6">
+    <div class="flex flex-wrap gap-3">
+        @if($room->status === 'waiting')
+            <form method="POST" action="{{ route('admin.gamerooms.start', $room) }}">
+                @csrf
+                <x-admin.button variant="primary" icon="bi bi-play-circle" type="submit">
+                    Start Game
+                </x-admin.button>
+            </form>
+        @endif
+        
+        @if(in_array($room->status, ['waiting', 'in_progress']))
+            <form method="POST" action="{{ route('admin.gamerooms.cancel', $room) }}">
+                @csrf
+                <x-admin.button variant="danger" icon="bi bi-slash-circle" type="submit"
+                    onclick="return confirm('Are you sure you want to cancel this game room?')">
+                    Cancel Room
+                </x-admin.button>
+            </form>
+        @endif
+        
+        @if($room->status === 'in_progress')
+            <form method="POST" action="{{ route('admin.gamerooms.complete', $room) }}">
+                @csrf
+                <x-admin.button variant="success" icon="bi bi-check-circle" type="submit">
+                    Complete Game
+                </x-admin.button>
+            </form>
+        @endif
+        
+        @if($room->status === 'disabled')
+            <form method="POST" action="{{ route('admin.gamerooms.enable', $room) }}">
+                @csrf
+                <x-admin.button variant="success" icon="bi bi-play-circle" type="submit">
+                    Enable Room
+                </x-admin.button>
+            </form>
+        @endif
+        
+        @if($room->status === 'waiting')
+            <form method="POST" action="{{ route('admin.gamerooms.disable', $room) }}">
+                @csrf
+                <x-admin.button variant="secondary" icon="bi bi-lock" type="submit">
+                    Disable Room
+                </x-admin.button>
+            </form>
+        @endif
     </div>
-</div>
+    
+    <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+            Current Status: 
+            @switch($room->status)
+                @case('waiting')
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                        Waiting
+                    </span>
+                    @break
+                @case('disabled')
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                        Disabled
+                    </span>
+                    @break
+                @case('in_progress')
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        In Progress
+                    </span>
+                    @break
+                @case('completed')
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        Completed
+                    </span>
+                    @break
+            @endswitch
+        </p>
+    </div>
+</x-admin.card>
 @endsection

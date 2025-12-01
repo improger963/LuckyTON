@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('admin.layouts.modern-app')
 
 @section('title', 'Dashboard')
 @section('subtitle', 'Welcome to your admin dashboard')
@@ -6,164 +6,131 @@
 @section('content')
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
     <!-- Total Users Card -->
-    <div class="admin-stat-card fade-in">
-        <div class="flex items-center">
-            <div class="stat-icon">
-                <i class="bi bi-people text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <h3 class="admin-stat-number">{{ $stats['total_users'] ?? 0 }}</h3>
-                <p class="admin-stat-label">Total Users</p>
-                <div class="admin-stat-trend up">
-                    <i class="bi bi-arrow-up mr-1"></i>
-                    <span>+{{ $stats['new_users_today'] ?? 0 }} today</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-admin.stat-card 
+        icon="bi bi-people" 
+        iconBgColor="bg-blue-100" 
+        iconColor="text-blue-600" 
+        value="{{ $stats['total_users'] ?? 0 }}" 
+        label="Total Users" 
+        trend="+{{ $stats['new_users_today'] ?? 0 }} today" 
+        trendDirection="up" />
 
     <!-- Total Game Rooms Card -->
-    <div class="admin-stat-card fade-in">
-        <div class="flex items-center">
-            <div class="stat-icon">
-                <i class="bi bi-controller text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <h3 class="admin-stat-number">{{ $stats['total_rooms'] ?? 0 }}</h3>
-                <p class="admin-stat-label">Game Rooms</p>
-                <div class="admin-stat-trend up">
-                    <i class="bi bi-arrow-up mr-1"></i>
-                    <span>Active</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-admin.stat-card 
+        icon="bi bi-controller" 
+        iconBgColor="bg-purple-100" 
+        iconColor="text-purple-600" 
+        value="{{ $stats['total_rooms'] ?? 0 }}" 
+        label="Game Rooms" 
+        trend="Active" 
+        trendDirection="up" />
 
     <!-- Pending Withdrawals Card -->
-    <div class="admin-stat-card fade-in">
-        <div class="flex items-center">
-            <div class="stat-icon">
-                <i class="bi bi-cash-coin text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <h3 class="admin-stat-number">{{ $stats['pending_withdrawals'] ?? 0 }}</h3>
-                <p class="admin-stat-label">Pending Withdrawals</p>
-                @if(($stats['pending_withdrawals'] ?? 0) > 0)
-                <div class="admin-stat-trend down">
-                    <i class="bi bi-exclamation-triangle mr-1"></i>
-                    <span>Attention needed</span>
-                </div>
-                @else
-                <div class="admin-stat-trend up">
-                    <i class="bi bi-check-circle mr-1"></i>
-                    <span>All clear</span>
-                </div>
-                @endif
-            </div>
-        </div>
-    </div>
+    <x-admin.stat-card 
+        icon="bi bi-cash-coin" 
+        iconBgColor="bg-orange-100" 
+        iconColor="text-orange-600" 
+        value="{{ $stats['pending_withdrawals'] ?? 0 }}" 
+        label="Pending Withdrawals" 
+        trend="{{ ($stats['pending_withdrawals'] ?? 0) > 0 ? 'Attention needed' : 'All clear' }}" 
+        trendDirection="{{ ($stats['pending_withdrawals'] ?? 0) > 0 ? 'down' : 'up' }}" />
 
-    <!-- Total Tournaments Card -->
-    <div class="admin-stat-card fade-in">
-        <div class="flex items-center">
-            <div class="stat-icon">
-                <i class="bi bi-trophy text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <h3 class="admin-stat-number">{{ $stats['total_tournaments'] ?? 0 }}</h3>
-                <p class="admin-stat-label">Tournaments</p>
-                <div class="admin-stat-trend up">
-                    <i class="bi bi-arrow-up mr-1"></i>
-                    <span>Active</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Total Transactions Card -->
+    <x-admin.stat-card 
+        icon="bi bi-graph-up" 
+        iconBgColor="bg-green-100" 
+        iconColor="text-green-600" 
+        value="{{ $stats['total_transactions'] ?? 0 }}" 
+        label="Transactions" 
+        trend="-2.5%" 
+        trendDirection="down" 
+        trendLabel="from last week" />
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Recent Users -->
-    <div class="admin-card fade-in">
-        <div class="admin-card-header">
-            <div class="flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Users</h2>
-                <a href="{{ route('admin.users.index') }}" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                    View all
-                </a>
-            </div>
-        </div>
-        <div class="admin-card-body">
-            <div class="overflow-x-auto">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Registered</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($latestUsers as $user)
-                        <tr>
-                            <td>
-                                <div class="flex items-center">
-                                    <div class="admin-user-avatar admin-user-avatar-sm">
-                                        {{ substr($user->username ?? $user->email, 0, 1) }}
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="font-medium text-gray-900 dark:text-white">
-                                            {{ $user->username ?? $user->email }}
-                                        </p>
-                                    </div>
+    <x-admin.card title="Recent Users" subtitle="Latest registered users">
+        <x-slot name="actions">
+            <a href="{{ route('admin.users.index') }}" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                View all
+            </a>
+        </x-slot>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">User</th>
+                        <th scope="col" class="px-6 py-3">Registered</th>
+                        <th scope="col" class="px-6 py-3">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($latestUsers as $user)
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                                    {{ substr($user->username ?? $user->email, 0, 1) }}
                                 </div>
-                            </td>
-                            <td>
-                                {{ $user->created_at->format('M d, Y') }}
-                            </td>
-                            <td>
-                                @if($user->banned_at)
-                                    <span class="admin-badge-danger">Banned</span>
-                                @else
-                                    <span class="admin-badge-success">Active</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="3" class="text-center py-4 text-gray-500 dark:text-gray-400">
-                                No users found
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                <div class="ml-3">
+                                    <p class="font-medium text-gray-900 dark:text-white">
+                                        {{ $user->username ?? $user->email }}
+                                    </p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $user->created_at->format('M d, Y') }}
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($user->banned_at)
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                    Banned
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                    Active
+                                </span>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="3" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                            No users found
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-    </div>
+    </x-admin.card>
 
     <!-- Recent Activities -->
-    <div class="admin-card fade-in">
-        <div class="admin-card-header">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Activities</h2>
-        </div>
-        <div class="admin-card-body">
-            <div class="space-y-4">
-                @forelse($recentActivities as $activity)
-                <div class="admin-activity-item">
-                    <div class="admin-activity-icon">
-                        <i class="bi bi-activity"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $activity['description'] ?? 'Activity' }}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $activity['user'] ?? 'Unknown User' }}</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $activity['time'] ?? 'Just now' }}</p>
-                    </div>
+    <x-admin.card title="Recent Activities" subtitle="Latest transactions">
+        <div class="space-y-4">
+            @forelse($recentActivities as $activity)
+            <div class="flex items-start p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center">
+                    <i class="bi bi-activity"></i>
                 </div>
-                @empty
-                <p class="text-center py-4 text-gray-500 dark:text-gray-400">No recent activities</p>
-                @endforelse
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                        {{ $activity->description ?? 'Transaction' }}
+                    </p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ $activity->wallet->user->username ?? 'Unknown User' }}
+                    </p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        {{ $activity->created_at->diffForHumans() }}
+                    </p>
+                </div>
             </div>
+            @empty
+            <p class="text-center py-4 text-gray-500 dark:text-gray-400">No recent activities</p>
+            @endforelse
         </div>
-    </div>
+    </x-admin.card>
 </div>
 @endsection
