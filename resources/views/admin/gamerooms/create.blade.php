@@ -83,14 +83,14 @@
                     <option value="waiting" {{ old('status') == 'waiting' ? 'selected' : '' }}>
                         Waiting
                     </option>
-                    <option value="disabled" {{ old('status') == 'disabled' ? 'selected' : '' }}>
-                        Disabled
+                    <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>
+                        Cancelled
                     </option>
                     <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>
                         In Progress
                     </option>
-                    <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>
-                        Completed
+                    <option value="finished" {{ old('status') == 'finished' ? 'selected' : '' }}>
+                        Finished
                     </option>
                 </select>
                 @error('status')

@@ -77,9 +77,9 @@
                                     Waiting
                                 </span>
                                 @break
-                            @case('disabled')
+                            @case('cancelled')
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                                    Disabled
+                                    Cancelled
                                 </span>
                                 @break
                             @case('in_progress')
@@ -87,9 +87,9 @@
                                     In Progress
                                 </span>
                                 @break
-                            @case('completed')
+                            @case('finished')
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                    Completed
+                                    Finished
                                 </span>
                                 @break
                         @endswitch
@@ -125,7 +125,7 @@
                                         <i class="bi bi-check-circle"></i>
                                     </button>
                                 </form>
-                            @elseif($room->status === 'disabled')
+                            @elseif($room->status === 'cancelled')
                                 <form method="POST" action="{{ route('admin.gamerooms.enable', $room) }}">
                                     @csrf
                                     <button type="submit" class="p-2 rounded-lg text-green-500 hover:bg-green-100 dark:text-green-400 dark:hover:bg-green-900/30 transition-colors duration-200"

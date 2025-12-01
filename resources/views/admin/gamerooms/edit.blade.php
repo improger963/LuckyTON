@@ -82,14 +82,14 @@
                     <option value="waiting" {{ old('status', $room->status) == 'waiting' ? 'selected' : '' }}>
                         Waiting
                     </option>
-                    <option value="disabled" {{ old('status', $room->status) == 'disabled' ? 'selected' : '' }}>
-                        Disabled
+                    <option value="cancelled" {{ old('status', $room->status) == 'cancelled' ? 'selected' : '' }}>
+                        Cancelled
                     </option>
                     <option value="in_progress" {{ old('status', $room->status) == 'in_progress' ? 'selected' : '' }}>
                         In Progress
                     </option>
-                    <option value="completed" {{ old('status', $room->status) == 'completed' ? 'selected' : '' }}>
-                        Completed
+                    <option value="finished" {{ old('status', $room->status) == 'finished' ? 'selected' : '' }}>
+                        Finished
                     </option>
                 </select>
                 @error('status')
@@ -140,7 +140,7 @@
             </form>
         @endif
         
-        @if($room->status === 'disabled')
+        @if($room->status === 'cancelled')
             <form method="POST" action="{{ route('admin.gamerooms.enable', $room) }}">
                 @csrf
                 <x-admin.button variant="success" icon="bi bi-play-circle" type="submit">
@@ -168,9 +168,9 @@
                         Waiting
                     </span>
                     @break
-                @case('disabled')
+                @case('cancelled')
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                        Disabled
+                        Cancelled
                     </span>
                     @break
                 @case('in_progress')
@@ -178,9 +178,9 @@
                         In Progress
                     </span>
                     @break
-                @case('completed')
+                @case('finished')
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        Completed
+                        Finished
                     </span>
                     @break
             @endswitch
