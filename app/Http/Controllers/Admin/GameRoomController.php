@@ -16,12 +16,12 @@ class GameRoomController extends Controller
      */
     public function index(): View
     {
-        $gamerooms = GameRoom::withCount('players')
+        $rooms = GameRoom::withCount('players')
             ->orderBy('game_type')
             ->orderBy('stake')
             ->paginate(15);
 
-        return view('admin.gamerooms.index', ['gamerooms' => $gamerooms]);
+        return view('admin.gamerooms.index', ['rooms' => $rooms]);
     }
 
     /**
